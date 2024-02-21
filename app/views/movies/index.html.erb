@@ -1,29 +1,9 @@
-# <p style="color: green"><%= notice %></p>
 
-# <h1>Movies</h1>
-
-# <table id="movies-table">
-#   <thead>
-#     <tr>
-#       <th><button class="sort-btn" data-sort="title">Title</button></th>
-#       <th><button class="sort-btn" data-sort="rating">Rating</button></th>
-#       <th><button class="sort-btn" data-sort="release_date">Release Date</button></th>
-#       <th>Action</th>
-#     </tr>
-#   </thead>
-#   <tbody>
-#     <% @movies.each do |movie| %>
-#       <tr>
-#         <td><%= movie.title %></td>
-#         <td><%= movie.rating %></td>
-#         <td><%= movie.release_date %></td>
-#         <td><%= link_to "Show", movie %></td>
-#       </tr>
-#     <% end %>
-#   </tbody>
+# <table id="movies-table" data-sort-column="" data-sort-order="">
+#   <!-- Your table content here -->
 # </table>
 
-# <%= link_to "New movie", new_movie_path %>
+# <p id="sorted-column-info"></p>
 
 # <script>
 #   document.addEventListener('DOMContentLoaded', function() {
@@ -60,83 +40,119 @@
 
 #       table.dataset.sortColumn = column;
 #       table.dataset.sortOrder = isDescending ? 'asc' : 'desc';
+
+#       updateSortedColumnText(column, isDescending);
+#       highlightSortedColumn(column, isDescending);
 #     }
 
 #     function getHeaderIndex(columnName) {
 #       const headers = Array.from(table.querySelectorAll('th button'));
 #       return headers.findIndex(header => header.dataset.sort === columnName);
 #     }
+
+#     function updateSortedColumnText(column, isDescending) {
+#       const sortOrder = isDescending ? 'descending' : 'ascending';
+#       document.getElementById('sorted-column-info').textContent = `The ${column} is sorted in ${sortOrder} order.`;
+#     }
+
+#     function highlightSortedColumn(column, isDescending) {
+#       headers.forEach(header => {
+#         if (header.dataset.sort === column) {
+#           if (isDescending) {
+#             header.style.backgroundColor = 'yellow';
+#           } else {
+#             header.style.backgroundColor = 'green';
+#           }
+#         } else {
+#           header.style.backgroundColor = ''; // Reset other headers
+#         }
+#       });
+#     }
 #   });
 # </script>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Page Title</title>
+</head>
+<body>
+    <table id="movies-table" data-sort-column="" data-sort-order="">
+        <!-- Your table content here -->
+    </table>
 
-<table id="movies-table" data-sort-column="" data-sort-order="">
-  <!-- Your table content here -->
-</table>
+    <p id="sorted-column-info"></p>
 
-<p id="sorted-column-info"></p>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the <body> element
+            var body = document.body;
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const table = document.getElementById('movies-table');
-    const headers = table.querySelectorAll('th button');
+            // Set the background color to light gray
+            body.style.backgroundColor = '#f0f0f0'; // Replace with your desired light gray color
 
-    headers.forEach(header => {
-      header.addEventListener('click', () => {
-        const column = header.dataset.sort;
-        sortTable(table, column);
-      });
-    });
+            // Rest of your JavaScript code...
+            const table = document.getElementById('movies-table');
+            const headers = table.querySelectorAll('th button');
 
-    function sortTable(table, column) {
-      const tbody = table.querySelector('tbody');
-      const rows = Array.from(tbody.querySelectorAll('tr'));
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const column = header.dataset.sort;
+                    sortTable(table, column);
+                });
+            });
 
-      const isDescending = table.dataset.sortColumn === column && table.dataset.sortOrder === 'desc';
+            function sortTable(table, column) {
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
 
-      rows.sort((a, b) => {
-        const aValue = a.querySelector(`td:nth-child(${getHeaderIndex(column) + 1})`).innerText;
-        const bValue = b.querySelector(`td:nth-child(${getHeaderIndex(column) + 1})`).innerText;
+                const isDescending = table.dataset.sortColumn === column && table.dataset.sortOrder === 'desc';
 
-        return isDescending ? bValue.localeCompare(aValue) : aValue.localeCompare(bValue);
-      });
+                rows.sort((a, b) => {
+                    const aValue = a.querySelector(`td:nth-child(${getHeaderIndex(column) + 1})`).innerText;
+                    const bValue = b.querySelector(`td:nth-child(${getHeaderIndex(column) + 1})`).innerText;
 
-      while (tbody.firstChild) {
-        tbody.removeChild(tbody.firstChild);
-      }
+                    return isDescending ? bValue.localeCompare(aValue) : aValue.localeCompare(bValue);
+                });
 
-      rows.forEach(row => {
-        tbody.appendChild(row);
-      });
+                while (tbody.firstChild) {
+                    tbody.removeChild(tbody.firstChild);
+                }
 
-      table.dataset.sortColumn = column;
-      table.dataset.sortOrder = isDescending ? 'asc' : 'desc';
+                rows.forEach(row => {
+                    tbody.appendChild(row);
+                });
 
-      updateSortedColumnText(column, isDescending);
-      highlightSortedColumn(column, isDescending);
-    }
+                table.dataset.sortColumn = column;
+                table.dataset.sortOrder = isDescending ? 'asc' : 'desc';
 
-    function getHeaderIndex(columnName) {
-      const headers = Array.from(table.querySelectorAll('th button'));
-      return headers.findIndex(header => header.dataset.sort === columnName);
-    }
+                updateSortedColumnText(column, isDescending);
+                highlightSortedColumn(column, isDescending);
+            }
 
-    function updateSortedColumnText(column, isDescending) {
-      const sortOrder = isDescending ? 'descending' : 'ascending';
-      document.getElementById('sorted-column-info').textContent = `The ${column} is sorted in ${sortOrder} order.`;
-    }
+            function getHeaderIndex(columnName) {
+                const headers = Array.from(table.querySelectorAll('th button'));
+                return headers.findIndex(header => header.dataset.sort === columnName);
+            }
 
-    function highlightSortedColumn(column, isDescending) {
-      headers.forEach(header => {
-        if (header.dataset.sort === column) {
-          if (isDescending) {
-            header.style.backgroundColor = 'yellow';
-          } else {
-            header.style.backgroundColor = 'green';
-          }
-        } else {
-          header.style.backgroundColor = ''; // Reset other headers
-        }
-      });
-    }
-  });
-</script>
+            function updateSortedColumnText(column, isDescending) {
+                const sortOrder = isDescending ? 'descending' : 'ascending';
+                document.getElementById('sorted-column-info').textContent = `The ${column} is sorted in ${sortOrder} order.`;
+            }
+
+            function highlightSortedColumn(column, isDescending) {
+                headers.forEach(header => {
+                    if (header.dataset.sort === column) {
+                        if (isDescending) {
+                            header.style.backgroundColor = 'yellow';
+                        } else {
+                            header.style.backgroundColor = 'green';
+                        }
+                    } else {
+                        header.style.backgroundColor = ''; // Reset other headers
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
